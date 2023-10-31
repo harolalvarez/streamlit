@@ -7,7 +7,7 @@ from sklearn.metrics import accuracy_score
 # Cargar el conjunto de datos
 @st.cache
 def load_data():
-    data = pd.read_csv("data.csv")
+    data = pd.read_csv("Manejo_residuos_peligrosos_Palmira_preprocessed.csv")
     return data
 
 data = load_data()
