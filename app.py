@@ -36,7 +36,14 @@ model.fit(X_train, y_train)
 # Evaluar el modelo
 y_pred = model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
-st.write(f'Precisión del modelo: {accuracy}')
+st.write(f'Precisión del modelo: {accuracy:.2f}')
+
+# Gráfico de precisión
+st.subheader('Gráfico de Precisión')
+st.text("El gráfico de precisión muestra la precisión del modelo.")
+fig, ax = plt.subplots()
+sns.histplot(accuracy, bins=10, ax=ax)
+st.pyplot(fig)
 
 # Mostrar resultados, simulación de escenarios, recomendaciones, etc.
 # Agrega secciones adicionales según tus necesidades
