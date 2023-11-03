@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 # Importar el conjunto de datos
-df = pd.read_csv("Manejo_residuos_peligrosos_Palmira_preprocessed.csv")
+df = pd.read_csv("Manejo_residuos_peligrosos_Palmiraa.csv")
 
 # Mostrar un resumen del conjunto de datos
 st.write(df.describe())
