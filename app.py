@@ -1,6 +1,8 @@
 # Importar las bibliotecas necesarias
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
+import pickle
+import streamlit as st
 
 # Importar el dataset
 df = pd.read_csv("Manejo_residuos_peligrosos_Palmira_preprocessed.csv")
@@ -22,8 +24,24 @@ pickle.dump(clf, open("model.pkl", "wb"))
 # Cargar el modelo
 clf = pickle.load(open("model.pkl", "rb"))
 
+# Crear la aplicación de Streamlit
+st.title("Predicción de incumplimiento de normas de manejo de residuos peligrosos")
+
+# Seleccionar los datos de entrada
+tipo_identificacion_del_sujeto = st.selectbox("Tipo de identificación del sujeto", df["tipo_identificacion_del_sujeto"].unique())
+tipo_clase_de_sujeto = st.selectbox("Tipo de clase de sujeto", df["tipo_clase_de_sujeto"].unique())
+comuna = st.selectbox("Comuna", df["comuna"].unique())
+barrio = st.selectbox("Barrio", df["barrio"].unique())
+fecha_programada = st.date_input("Fecha programada")
+tipo = st.selectbox("Tipo de visita", df["tipo"].unique())
+fuente = st.selectbox("Fuente de los residuos peligrosos", df["fuente"].unique())
+
 # Predecir el cumplimiento
 prediccion = clf.predict([[tipo_identificacion_del_sujeto, tipo_clase_de_sujeto, comuna, barrio, fecha_programada, tipo, fuente]])[0]
 
 # Mostrar el resultado
-print(prediccion)
+st.write("El riesgo de incumplimiento es de", prediccion)
+
+# Compartir la aplicación en Streamlit
+st.write("Para compartir la aplicación, haga clic en el botón 'Compartir'.")
+st.button("Compartir")
