@@ -6,6 +6,9 @@ from sklearn.ensemble import RandomForestClassifier
 # Importar el conjunto de datos
 df = pd.read_csv("Manejo_residuos_peligrosos_Palmira_preprocessed.csv")
 
+# Convertir los valores de la columna 'comuna' a números
+df["comuna"] = df["comuna"].astype("int")
+
 # Crear un modelo de machine learning
 X = df[["tipo_identificacion", "tipo_clase_sujeto", "comuna", "barrio", "fecha_program", "tipo", "fuente", "sector_economico"]]
 y = df["de_cumplimiento"]
