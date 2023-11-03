@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegression
 
 # Importar el dataset
-df = pd.read_csv("data/manejo-residuos-peligrosos-palmira.csv")
+df = pd.read_csv("Manejo_residuos_peligrosos_Palmira_preprocessed.csv")
 
 # Dividir el conjunto de datos en conjuntos de entrenamiento y prueba
 X_train, X_test, y_train, y_test = train_test_split(df, df["de_cumplimiento"], test_size=0.25)
