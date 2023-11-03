@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 # Importar el conjunto de datos
-df = pd.read_csv("https://www.datos.gov.co/api/views/39bi-a35k/rows.csv?accessType=DOWNLOAD")
+df = pd.read_csv("Manejo_residuos_peligrosos_Palmira_preprocessed.csv")
 
 # Verificar si la columna existe
 if "tipo_clase_sujeto" in df.columns:
