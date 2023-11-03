@@ -1,47 +1,20 @@
-# Importar las bibliotecas necesarias
-import pandas as pd
-from sklearn.linear_model import LogisticRegression
-import pickle
 import streamlit as st
+import pandas as pd
 
-# Importar el dataset
+# Importar el conjunto de datos
 df = pd.read_csv("Manejo_residuos_peligrosos_Palmira_preprocessed.csv")
 
-# Dividir el conjunto de datos en conjuntos de entrenamiento y prueba
-X_train, X_test, y_train, y_test = train_test_split(df, df["de_cumplimiento"], test_size=0.25)
+# Mostrar un resumen del conjunto de datos
+st.write(df.describe())
 
-# Entrenar el modelo
-clf = LogisticRegression()
-clf.fit(X_train, y_train)
+# Mostrar un gráfico de barras de la cantidad de visitas por tipo de sujeto
+st.bar_chart(df["tipo_clase_sujeto"].value_counts())
 
-# Evaluar el modelo
-score = clf.score(X_test, y_test)
-print(score)
+# Mostrar un mapa de la cantidad de visitas por comuna
+st.map(df.groupby("comuna")["tipo_clase_sujeto"].value_counts())
 
-# Guardar el modelo
-pickle.dump(clf, open("model.pkl", "wb"))
+# Mostrar un gráfico de líneas de la cantidad de visitas por fecha
+st.line_chart(df.groupby("fecha_program")["tipo_clase_sujeto"].value_counts())
 
-# Cargar el modelo
-clf = pickle.load(open("model.pkl", "rb"))
-
-# Crear la aplicación de Streamlit
-st.title("Predicción de incumplimiento de normas de manejo de residuos peligrosos")
-
-# Seleccionar los datos de entrada
-tipo_identificacion_del_sujeto = st.selectbox("Tipo de identificación del sujeto", df["tipo_identificacion_del_sujeto"].unique())
-tipo_clase_de_sujeto = st.selectbox("Tipo de clase de sujeto", df["tipo_clase_de_sujeto"].unique())
-comuna = st.selectbox("Comuna", df["comuna"].unique())
-barrio = st.selectbox("Barrio", df["barrio"].unique())
-fecha_programada = st.date_input("Fecha programada")
-tipo = st.selectbox("Tipo de visita", df["tipo"].unique())
-fuente = st.selectbox("Fuente de los residuos peligrosos", df["fuente"].unique())
-
-# Predecir el cumplimiento
-prediccion = clf.predict([[tipo_identificacion_del_sujeto, tipo_clase_de_sujeto, comuna, barrio, fecha_programada, tipo, fuente]])[0]
-
-# Mostrar el resultado
-st.write("El riesgo de incumplimiento es de", prediccion)
-
-# Compartir la aplicación en Streamlit
-st.write("Para compartir la aplicación, haga clic en el botón 'Compartir'.")
-st.button("Compartir")
+# Mostrar una tabla de los datos de una visita específica
+st.table(df.loc[df["tipo_identificacion"] == "NIT"])
