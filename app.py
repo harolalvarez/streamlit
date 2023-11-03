@@ -5,7 +5,7 @@ import pickle
 import streamlit as st
 
 # Importar el dataset
-df = pd.read_csv("Manejo_residuos_peligrosos_Palmira_preprocessed.csv", dtype={"de_cumplimiento": "category"})
+df = pd.read_csv("Manejo_residuos_peligrosos_Palmiraa.csv", dtype={"de_cumplimiento": "category"})
 
 # Eliminar valores faltantes
 df.dropna(inplace=True)
