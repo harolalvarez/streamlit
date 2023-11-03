@@ -3,7 +3,7 @@ from sklearn.tree import DecisionTreeClassifier
 import streamlit as st
 
 # Leer el dataset en un marco de datos de Pandas
-df = pd.read_csv("data.csv")
+df = pd.read_csv("Manejo_residuos_peligrosos_Palmira_preprocessed.csv")
 
 # Seleccionar las variables de entrada y la variable de salida
 X = df[["tipo_identificacion", "tipo_clase_sujeto", "comuna", "barrio", "fecha_programada", "fecha_ejecutada", "tipo", "fuente", "acta_informe", "citacion_proceso_visita_1", "fecha_programada_1", "fecha_ejecutada_1", "tiempo", "tipo_1", "fuente_1", "proxima_visita_dd", "acta_informe_1", "de_cumplimiento_1", "concepto_1"]]
