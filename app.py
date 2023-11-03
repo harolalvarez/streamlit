@@ -1,44 +1,60 @@
-import streamlit as st
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
+from sklearn.tree import DecisionTreeClassifier
+import streamlit as st
 
-# Cargar el conjunto de datos
-@st.cache
-def load_data():
-    data = pd.read_csv("Manejo_residuos_peligrosos_Palmira_preprocessed.csv")
-    return data
+# Leer el dataset en un marco de datos de Pandas
+df = pd.read_csv("data.csv")
 
-data = load_data()
+# Seleccionar las variables de entrada y la variable de salida
+X = df[["tipo_identificacion", "tipo_clase_sujeto", "comuna", "barrio", "fecha_programada", "fecha_ejecutada", "tipo", "fuente", "acta_informe", "citacion_proceso_visita_1", "fecha_programada_1", "fecha_ejecutada_1", "tiempo", "tipo_1", "fuente_1", "proxima_visita_dd", "acta_informe_1", "de_cumplimiento_1", "concepto_1"]]
+y = df["de_cumplimiento"]
 
-# Título de la aplicación
-st.title('Plataforma de Evaluación de Riesgos Ambientales en Palmira')
+# Dividir el dataset en un conjunto de entrenamiento y un conjunto de prueba
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
 
-# Análisis de Riesgos
-st.header('Análisis de Riesgos')
+# Entrenar un modelo de machine learning en el conjunto de entrenamiento
+model = DecisionTreeClassifier()
+model.fit(X_train, y_train)
 
-# Visualización de datos
-st.header('Visualización de Datos')
+# Guardar el modelo entrenado
+model.save("model.pkl")
 
-# Mostrar datos generales
-st.write("Datos Generales:")
-st.write(data)
+# Cargar el modelo entrenado
+model = pickle.load(open("model.pkl", "rb"))
 
-# Identificar el sector que genera más contaminación
-sector_contaminacion = data['sector'].value_counts().idxmax()
-st.write(f"Sector que genera más contaminación: {sector_contaminacion}")
+# Crear la aplicación Streamlit
+st.title("Modelo de machine learning para residuos peligrosos")
 
-# Gráfico de barras para visualizar la contaminación por sector
-st.subheader('Contaminación por Sector')
-plt.figure(figsize=(10, 6))
-sns.countplot(data=data, x='sector')
-plt.xticks(rotation=45)
-st.pyplot(plt)
+# Mostrar el accuracy del modelo
+st.write("Accuracy:", model.score(X_test, y_test))
 
-# Pregunta predictiva
-st.header('Pregunta Predictiva')
-st.write("¿Cuál es el riesgo de eventos ambientales adversos en Palmira y cómo pueden mitigirse a través de medidas preventivas, regulaciones y cambios en la infraestructura?")
+# Crear un formulario para obtener las variables de entrada
+st.form("Predicción")
+tipo_identificacion = st.text_input("Tipo de identificación")
+tipo_clase_sujeto = st.text_input("Tipo de clase de sujeto")
+comuna = st.text_input("Comuna")
+barrio = st.text_input("Barrio")
+fecha_programada = st.text_input("Fecha programada")
+fecha_ejecutada = st.text_input("Fecha ejecutada")
+tipo = st.text_input("Tipo")
+fuente = st.text_input("Fuente")
+acta_informe = st.text_input("Acta de informe")
 
-# Nota: Extiende y personaliza este código según tus necesidades específicas
+# Obtener las variables de entrada
+X = pd.DataFrame({
+    "tipo_identificacion": [tipo_identificacion],
+    "tipo_clase_sujeto": [tipo_clase_sujeto],
+    "comuna": [comuna],
+    "barrio": [barrio],
+    "fecha_programada": [fecha_programada],
+    "fecha_ejecutada": [fecha_ejecutada],
+    "tipo": [tipo],
+    "fuente": [fuente],
+    "acta_informe": [acta_informe]
+})
 
+# Obtener la predicción del modelo
+prediction = model.predict(X)
+
+# Mostrar la predicción del modelo
+st.write("¿Cumple con las regulaciones?:", prediction)
