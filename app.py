@@ -1,60 +1,59 @@
 import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
-import streamlit as st
 
-# Leer el dataset en un marco de datos de Pandas
+# Cargar el dataset
 df = pd.read_csv("Manejo_residuos_peligrosos_Palmira_preprocessed.csv")
 
-# Seleccionar las variables de entrada y la variable de salida
-X = df[["tipo_identificacion", "tipo_clase_sujeto", "comuna", "barrio", "fecha_programada", "fecha_ejecutada", "tipo", "fuente", "acta_informe", "citacion_proceso_visita_1", "fecha_programada_1", "fecha_ejecutada_1", "tiempo", "tipo_1", "fuente_1", "proxima_visita_dd", "acta_informe_1", "de_cumplimiento_1", "concepto_1"]]
+# Seleccionar las características
+X = df[["tipo_identificacion", "tipo_clase_sujeto", "comuna", "barrio", "fecha_programada", "fecha_ejecutada", "tipo", "fuente", "tiempo"]]
 y = df["de_cumplimiento"]
 
-# Dividir el dataset en un conjunto de entrenamiento y un conjunto de prueba
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
-
-# Entrenar un modelo de machine learning en el conjunto de entrenamiento
+# Entrenar el modelo
 model = DecisionTreeClassifier()
-model.fit(X_train, y_train)
+model.fit(X, y)
 
-# Guardar el modelo entrenado
+# Guardar el modelo
 model.save("model.pkl")
 
-# Cargar el modelo entrenado
+# Streamlit
+import streamlit as st
+
+# Cargar el modelo
 model = pickle.load(open("model.pkl", "rb"))
 
-# Crear la aplicación Streamlit
-st.title("Modelo de machine learning para residuos peligrosos")
+# Función para predecir
+def predict(X):
+  return model.predict(X)
 
-# Mostrar el accuracy del modelo
-st.write("Accuracy:", model.score(X_test, y_test))
+# Mostrar el modelo
+st.title("Modelo de predicción de cumplimiento de residuos peligrosos")
+st.write("Este modelo predice si un sujeto cumplirá con los requisitos de manejo de residuos peligrosos.")
 
-# Crear un formulario para obtener las variables de entrada
-st.form("Predicción")
-tipo_identificacion = st.text_input("Tipo de identificación")
-tipo_clase_sujeto = st.text_input("Tipo de clase de sujeto")
-comuna = st.text_input("Comuna")
-barrio = st.text_input("Barrio")
-fecha_programada = st.text_input("Fecha programada")
-fecha_ejecutada = st.text_input("Fecha ejecutada")
-tipo = st.text_input("Tipo")
-fuente = st.text_input("Fuente")
-acta_informe = st.text_input("Acta de informe")
+# Entrada de datos
+tipo_identificacion = st.selectbox("Tipo de identificación", df["tipo_identificacion"].unique())
+tipo_clase_sujeto = st.selectbox("Tipo de clase de sujeto", df["tipo_clase_sujeto"].unique())
+comuna = st.selectbox("Comuna", df["comuna"].unique())
+barrio = st.selectbox("Barrio", df["barrio"].unique())
+fecha_programada = st.date_input("Fecha programada")
+fecha_ejecutada = st.date_input("Fecha ejecutada")
+tipo = st.selectbox("Tipo", df["tipo"].unique())
+fuente = st.selectbox("Fuente", df["fuente"].unique())
+tiempo = st.number_input("Tiempo")
 
-# Obtener las variables de entrada
+# Predecir
 X = pd.DataFrame({
-    "tipo_identificacion": [tipo_identificacion],
-    "tipo_clase_sujeto": [tipo_clase_sujeto],
-    "comuna": [comuna],
-    "barrio": [barrio],
-    "fecha_programada": [fecha_programada],
-    "fecha_ejecutada": [fecha_ejecutada],
-    "tipo": [tipo],
-    "fuente": [fuente],
-    "acta_informe": [acta_informe]
+  "tipo_identificacion": [tipo_identificacion],
+  "tipo_clase_sujeto": [tipo_clase_sujeto],
+  "comuna": [comuna],
+  "barrio": [barrio],
+  "fecha_programada": [fecha_programada],
+  "fecha_ejecutada": [fecha_ejecutada],
+  "tipo": [tipo],
+  "fuente": [fuente],
+  "tiempo": [tiempo]
 })
 
-# Obtener la predicción del modelo
-prediction = model.predict(X)
+y_pred = predict(X)
 
-# Mostrar la predicción del modelo
-st.write("¿Cumple con las regulaciones?:", prediction)
+# Salida
+st.write("El sujeto tiene un {:.0%} de probabilidad de cumplir con los requisitos.".format(y_pred[0]))
